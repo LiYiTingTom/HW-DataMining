@@ -1,4 +1,3 @@
-import re
 from time import time
 from pathlib import Path
 from copy import deepcopy
@@ -7,7 +6,7 @@ from typing import TypeVar, Dict, FrozenSet, Optional, List, Set, Any
 from collections import defaultdict
 from zipfile import ZipFile
 import pandas as pd
-from config import KAG_LIMIT
+from config import KAG_LIMIT, DATASET
 
 # Define some type.
 TID = TypeVar(int)
@@ -38,7 +37,7 @@ def write_file(file_name: str, data: Any, header: Optional[str]):
     print(f"file: '{file_name}' writen.")
 
 
-def get_data(path: Path):
+def get_data(path: Optional[Path] = DATASET):
     if path.parent.name == 'ibm':
         return get_ibm_data(path)
     else:
@@ -84,8 +83,9 @@ def get_kag_data(path: Path):
 
     for tid, item in zip(orders.order_id.to_list(), orders.product_id.to_list()):
         t_dict[tid].append(item)
-        ori_itemsets.add(item)
+        item = frozenset({item})
         item_counter[item] = item_counter.get(item, 0) + 1
+        ori_itemsets.add(item)
 
     return ori_itemsets, t_dict.values(), item_counter
 
@@ -113,9 +113,10 @@ def get_ibm_data(path: Path):
 
     # Formated data.
     for line in open(path):
-        _, _, tid, item, _ = re.split('[ \t\n]+', line)
+        _, tid, item = line.split()
         t_dict[tid].append(item)
-        item_counter[item] = item_counter.get(item, 0) + 1
         item = frozenset({item})
+        item_counter[item] = item_counter.get(item, 0) + 1
         ori_itemsets.add(item)
+
     return ori_itemsets, t_dict.values(), item_counter

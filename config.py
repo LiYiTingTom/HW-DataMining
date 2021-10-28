@@ -19,10 +19,10 @@ class DATA:
 class PARAMS:
     min_sup:  float = .4
     min_conf: float = .4
-    min_freq: int = 3
+    MIN_SUP: int = 3
 
 
 WRITE_FILE = True
 DISPLAY = True
-DATASET = DATA.ibm_test
+DATASET = DATA.ibm_test_sm
 KAG_LIMIT = 1000
