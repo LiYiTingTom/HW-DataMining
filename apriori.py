@@ -1,7 +1,4 @@
-from __future__ import annotations
 from datetime import datetime
-import re
-from copy import deepcopy
 from itertools import combinations
 from typing import TypeVar, Dict, FrozenSet, Optional, List, Set
 from config import DATASET, PARAMS, WRITE_FILE
@@ -171,6 +168,7 @@ all_itemsets = get_all_itemsets(
 
 # Get all association rules.
 rules = get_association_rules(itemsets=all_itemsets, min_conf=PARAMS.min_conf)
+
 
 if WRITE_FILE:
     file_name = f'{__file__}-{DATASET.name}-{datetime.now()}.csv'
