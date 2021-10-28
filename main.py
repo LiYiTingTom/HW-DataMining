@@ -2,12 +2,30 @@ import fpgrowth
 from utils import get_data
 from config import DATA
 
-'''simple data'''
+# Get data.
 _, transactions, _ = get_data(DATA.ibm_test)
-initSet = fpgrowth.createInitSet(transactions)
-myFPtree, myHeaderTab = fpgrowth.createFPtree(initSet, 3)
+
+# Format data.
+initSet = fpgrowth.format_trans(transactions)
+
+# Build FP-Tree
+fp_tree, header_table = fpgrowth.build_fp_tree(initSet, 3)
 
 freqItems = []
-fpgrowth.mineFPtree(myFPtree, myHeaderTab, 3, set([]), freqItems)
+fpgrowth.mining(fp_tree, header_table, 3, set([]), freqItems)
+for x in freqItems:
+    print(x)
+
+# Get data.
+_, transactions, _ = get_data(DATA.kag_order_products__prior)
+
+# Format data.
+initSet = fpgrowth.format_trans(transactions)
+
+# Build FP-Tree
+fp_tree, header_table = fpgrowth.build_fp_tree(initSet, 3)
+
+freqItems = []
+fpgrowth.mining(fp_tree, header_table, 3, set([]), freqItems)
 for x in freqItems:
     print(x)
