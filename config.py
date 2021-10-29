@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 @dataclass
 class DATA:
-    ibm_test: Path = Path('./data/ibm/ibm-5000.txt')
-    ibm_test_sm: Path = Path('./data/ibm/ibm-sm.txt')
+    ibm: Path = Path('./data/ibm/ibm-5000.txt')
     ibm_test_xs: Path = Path('./data/ibm/ibm-xs.txt')
-    kag_order_products__prior: Path = Path(
+    ibm_2021: Path = Path('./data/ibm/ibm-2021.txt')
+    kaggle: Path = Path(
         './data/market_sells_orders/order_products__prior.csv.zip')
     # order: Path = Path('data/market_sells_orders/input/orders.csv.zip')
     # aisles: Path = Path('data/market_sells_orders/input/aisles.csv.zip')
@@ -17,12 +17,10 @@ class DATA:
 
 @dataclass
 class PARAMS:
-    min_sup:  float = .4
-    min_conf: float = .4
-    MIN_SUP: int = 3
+    min_sup:  float = .02
+    min_conf: float = .05
 
 
-WRITE_FILE = True
-DISPLAY = True
-DATASET = DATA.ibm_test_sm
-KAG_LIMIT = 1000
+WRITE_FILE = False
+KAG_LIMIT = 100000
+OUTPUT_DIR = Path('./outputs/')

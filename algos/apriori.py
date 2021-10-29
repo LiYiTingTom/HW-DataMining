@@ -1,7 +1,6 @@
 from datetime import datetime
 from itertools import combinations
 from typing import TypeVar, Dict, FrozenSet, Optional, List, Set
-from config import DATASET, PARAMS, WRITE_FILE
 from utils import timing, write_file, get_data
 
 
@@ -15,7 +14,7 @@ ItemSets = TypeVar(List[ItemSet])
 def support(itemset: FrozenSet[Item], transactions: List[FrozenSet[Item]]):
     r"""Compute the target itemset's support value.
 
-    PARAMSs
+    Parameters
     ==========
     itemset: ItemSet
         The target itemset.
@@ -37,7 +36,7 @@ def support(itemset: FrozenSet[Item], transactions: List[FrozenSet[Item]]):
 def compute_supports(itemsets: ItemSets, transactions: List[ItemSet]):
     r"""Compute the itemset's support value in transactions.
 
-    PARAMSs
+    Parameters
     ==========
     itemsets: ItemSets
         The target itemsets.
@@ -53,10 +52,10 @@ def compute_supports(itemsets: ItemSets, transactions: List[ItemSet]):
     return {itemset: support(itemset, transactions) for itemset in itemsets}
 
 
-def apriori(itemsets: Set[Item],  transactions: List[Set[Item]], k: int):
+def apriori(itemsets: Set[Item],  transactions: List[Set[Item]], k: int, min_sup: float):
     r"""Apriori Algorithm.
 
-    PARAMSs
+    Parameters
     ==========
     itemsets: ItemSets
         The target itemsets.
@@ -73,20 +72,21 @@ def apriori(itemsets: Set[Item],  transactions: List[Set[Item]], k: int):
     t_size = len(transactions)
     # Count itemset occur in all transaction times.
     C = compute_supports(itemsets, transactions)
-    # Filter out less than PARAMS.min_sup.
-    L = dict(filter(lambda x: x[1] >= PARAMS.min_sup, C.items()))
+    # Filter out less than min_sup.
+    L = dict(filter(lambda x: x[1] >= min_sup, C.items()))
     # Union all itemsets.
+    if not L:
+        return L, None
     L_union = frozenset.union(*L.keys())
-    # print(L_union)
     # Generate combinations in forzenset type.
-    I = map(frozenset, combinations(L_union, k))                # Itemsets
+    I = map(frozenset, combinations(L_union, k))
     return L, I
 
 
-def get_all_itemsets(ori_itemsets: ItemSet, transactions: List[ItemSet]):
+def get_freq_itemsets(ori_itemsets: ItemSet, transactions: List[ItemSet], min_sup: float):
     r"""Get all itemsets.
 
-    PARAMSs
+    Parameters
     ==========
     ori_itemsets: ItemSet
         The original itemset.
@@ -101,9 +101,9 @@ def get_all_itemsets(ori_itemsets: ItemSet, transactions: List[ItemSet]):
     result = dict()
     for k in range(2, 100):
         I = ori_itemsets if k == 2 else I
-        L, I = apriori(I, transactions, k)
+        L, I = apriori(I, transactions, k, min_sup)
         result.update(L)
-        if 0 <= len(list(L)) <= 1:
+        if 0 <= len(list(L)) <= 1 and I is None:
             return result
     return result
 
@@ -111,7 +111,7 @@ def get_all_itemsets(ori_itemsets: ItemSet, transactions: List[ItemSet]):
 def rules_from_item(itemset: ItemSet):
     r"""Generate associations.
 
-    PARAMS
+    Parameter
     =========
     itemset: ItemSet
         The target itemset.
@@ -130,7 +130,7 @@ def rules_from_item(itemset: ItemSet):
 def get_association_rules(itemsets: ItemSets, min_conf: float):
     r"""Get all association rules for itemsets.
 
-    PARAMSs
+    Parameters
     ==========
     itemsets: ItemSets
         The traget itemsets.
@@ -156,21 +156,3 @@ def get_association_rules(itemsets: ItemSets, min_conf: float):
             result.append(
                 f"\"{str(set(left))}' -> '{str(set(right))}\", {sup:.6f}, {conf:.6f}, {lift:.6f}")
     return result
-
-
-# Get all data.
-ori_itemsets, transactions, _ = get_data(path=DATASET)
-# transactions = [frozenset.union(*trans) for trans in transactions]
-
-# Get all frequent itemsets.
-all_itemsets = get_all_itemsets(
-    ori_itemsets=ori_itemsets, transactions=transactions)
-
-# Get all association rules.
-rules = get_association_rules(itemsets=all_itemsets, min_conf=PARAMS.min_conf)
-
-
-if WRITE_FILE:
-    file_name = f'{__file__}-{DATASET.name}-{datetime.now()}.csv'
-    header = f"Relationship, Support, Confidence, Lift\n"
-    write_file(file_name=file_name, data=rules, header=header)

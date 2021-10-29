@@ -137,8 +137,11 @@ def get_prefix_paths(bases_ptn, sub_header_tab):
 def mining(parent, header_tab, min_sup, prefix_path, freq_itemsets):
     r"""The mining algorithm."""
     # Sort the base patterns.
-    bases_ptns = [v[0]
-                  for v in sorted(header_tab.items(), key=lambda p: p[1][0])]
+    try:
+        bases_ptns = [v[0]
+                      for v in sorted(header_tab.items(), key=lambda p: p[1][0])]
+    except AttributeError as e:
+        raise TypeError(header_tab)
 
     # Sequencially deal up with the base patterns.
     for base_ptn in bases_ptns:  # 对每个频繁项
@@ -161,8 +164,10 @@ def mining(parent, header_tab, min_sup, prefix_path, freq_itemsets):
 def format_trans(transactions: List[itemsetSets]):
     r"""Format the original transactions into **mapping of itemset to count values**."""
     result = dict()
+    print(f"tra:{transactions}")
     for trans in transactions:
         trans = frozenset(trans)
         result[trans] = result.get(trans, 0) + 1
 
+    print(f"result:{result}")
     return result
