@@ -164,10 +164,8 @@ def mining(parent, header_tab, min_sup, prefix_path, freq_itemsets):
 def format_trans(transactions: List[itemsetSets]):
     r"""Format the original transactions into **mapping of itemset to count values**."""
     result = dict()
-    print(f"tra:{transactions}")
     for trans in transactions:
         trans = frozenset(trans)
         result[trans] = result.get(trans, 0) + 1
 
-    print(f"result:{result}")
     return result

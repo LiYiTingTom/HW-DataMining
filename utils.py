@@ -136,7 +136,7 @@ def rules_from_item(itemset: ItemSet):
     return [(frozenset(l), frozenset(itemset.difference(l))) for l in left]
 
 
-def get_association_rules(itemsets: ItemSets, min_conf: float):
+def get_association_rules(itemsets: ItemSets, min_conf: float, min_sup: float):
     r"""Get all association rules for itemsets.
 
     PARAMSs
@@ -162,7 +162,7 @@ def get_association_rules(itemsets: ItemSets, min_conf: float):
         sup = itemsets[left | right]
         conf = sup / itemsets[left]
         lift = conf / itemsets[right]
-        if conf >= min_conf:
+        if conf >= min_conf and sup >= min_sup:
             result.append(
                 f"\"{str(set(left))}' -> '{str(set(right))}\", {sup:.6f}, {conf:.6f}, {lift:.6f}")
     return result

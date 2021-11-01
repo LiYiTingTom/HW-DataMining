@@ -21,6 +21,7 @@ class PARAMS:
     min_conf: float = .05
 
 
-WRITE_FILE = False
-KAG_LIMIT = 100000
-OUTPUT_DIR = Path('./outputs/')
+DISPLAY: bool = False
+WRITE_FILE: bool = False
+KAG_LIMIT: int = 10000
+OUTPUT_DIR: Path = Path('./outputs/')
